@@ -1,1 +1,75 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Enter size of square matrix (n): ";
+    cin >> n;
+
+    float a[20][40]; // Augmented matrix [A|I]
+    cout << "\nEnter elements of matrix A row-wise:\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> a[i][j];
+        }
+    }
+
+    // 🔹 Append Identity matrix to the right of A
+    for (int i = 0; i < n; i++) {
+        for (int j = n; j < 2*n; j++) {
+            a[i][j] = (i == (j - n)) ? 1 : 0;
+        }
+    }
+
+    // 🔹 Gauss–Jordan Elimination
+    for (int i = 0; i < n; i++) {
+        // Pivot element should not be zero
+        if (a[i][i] == 0) {
+            bool swapped = false;
+            for (int k = i + 1; k < n; k++) {
+                if (a[k][i] != 0) {
+                    for (int j = 0; j < 2*n; j++) {
+                        swap(a[i][j], a[k][j]);
+                    }
+                    swapped = true;
+                    break;
+                }
+            }
+            if (!swapped) {
+                cout << "\n❌ Inverse does not exist (singular matrix)\n";
+                return 0;
+            }
+        }
+
+        // Make diagonal element = 1
+        float pivot = a[i][i];
+        for (int j = 0; j < 2*n; j++) {
+            a[i][j] /= pivot;
+        }
+
+        // Make all other elements in column = 0
+        for (int k = 0; k < n; k++) {
+            if (k != i) {
+                float factor = a[k][i];
+                for (int j = 0; j < 2*n; j++) {
+                    a[k][j] -= factor * a[i][j];
+                }
+            }
+        }
+    }
+
+    // 🔹 Display Inverse Matrix
+    cout << "\n✅ Inverse of Matrix A is:\n";
+    cout << fixed << setprecision(4);
+    for (int i = 0; i < n; i++) {
+        for (int j = n; j < 2*n; j++) {
+            cout << setw(10) << a[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    return 0;
+}
 
